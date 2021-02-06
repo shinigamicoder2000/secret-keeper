@@ -1,15 +1,15 @@
-//jshint esversion:6
+
 const express=require('express');
 const bodyParser=require('body-parser');
 const ejs=require('ejs');
 const mongoose=require('mongoose');
 const app=express();
 
-mongoose.connect('mongodb://localhost:27017/userDB1',{useNewUrlParser:true,useUnifiedTopology: true });
-const userSchema={
+mongoose.connect('mongodb://localhost:27017/userDB',{useNewUrlParser:true,useUnifiedTopology: true });
+const userSchema=new mongoose.Schema({
     email:{type:String},
     password:{type:String}
-};
+});
 const User=new mongoose.model('User',userSchema);
 
 app.use(express.static('public'));
@@ -30,9 +30,9 @@ app.get('/register',(req,res)=>{
     res.render('register');
 })
 app.post('/register',(req,res)=>{
-
+console.log(req.body.username);
   const newUser=new User({
-      email:req.body.email,
+      email:req.body.username,
       password:req.body.password
   })
   newUser.save((err)=>{
@@ -58,12 +58,19 @@ app.post('/login',(req,res)=>{
                {
                    return res.render('secrets');
                }
+               else{
+                console.log("Invalid");
+                return res.redirect('/login');
+            }
+              
               
          }
          else{
-             res.render('login');
+             console.log("Invalid");
+             return res.redirect('/login');
          }
      }).catch(err=>{
+        console.log("Invalid");
          console.log(err);
      })
 })
